@@ -14,6 +14,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 @Catch()
 export class AppExceptionsFilter implements ExceptionFilter {
@@ -52,6 +53,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       useFactory: () => {
         return {
@@ -61,12 +63,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: [],
+      url: process.env.POSTGRES_DSN,
       synchronize: true,
     }),
     HealthModule,
@@ -79,7 +76,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
       useValue: ClientProxyFactory.create({
         transport: Transport.TCP,
         options: {
-          host: 'authentication',
+          host: 'localhost',
           port: parseInt(process.env.AUTHENTICATION_SERVICE_PORT),
         },
       }),
@@ -89,7 +86,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
       useValue: ClientProxyFactory.create({
         transport: Transport.TCP,
         options: {
-          host: 'user',
+          host: 'localhost',
           port: parseInt(process.env.USER_SERVICE_PORT),
         },
       }),

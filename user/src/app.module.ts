@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,6 +9,7 @@ import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       useFactory: () => {
         return {
@@ -20,7 +22,7 @@ import { CustomersModule } from './customers/customers.module';
         name: 'REDIS_SERVICE',
         transport: Transport.REDIS,
         options: {
-          host: process.env.RESID_HOST,
+          host: process.env.REDIS_HOST,
           port: parseInt(process.env.RESID_PORT),
         },
       },

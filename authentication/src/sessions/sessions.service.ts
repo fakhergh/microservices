@@ -8,6 +8,7 @@ import {
 
 import { LoginDto, RegisterDto } from './dto/create-session.dto';
 import { Session } from './entities/session.entity';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SessionsService {
@@ -37,7 +38,15 @@ export class SessionsService {
 
     await queryRunner.manager.save(session);
 
-    this.redis.send('create_customer', registerDto);
+    try {
+      Logger.log('Message Sent');
+      const response = await firstValueFrom(
+        this.redis.send('create_customer', registerDto),
+      );
+      Logger.log(response);
+    } catch (error) {
+      Logger.error(error);
+    }
 
     return session.token;
   }

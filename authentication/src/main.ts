@@ -9,7 +9,7 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        host: 'authentication',
+        host: process.env.REDIS_HOST,
         port: parseInt(process.env.AUTHENTICATION_SERVICE_PORT),
       },
     },
