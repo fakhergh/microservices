@@ -1,0 +1,106 @@
+version: "3.8"
+services:
+  #grafana:
+  #  image: grafana/grafana
+  #  container_name: grafana
+  #  restart: unless-stopped
+  #  ports:
+  #    - ${GRAFANA_PORT}:3000
+  #  volumes:
+  #    - grafana-storage:/var/lib/grafana
+  #  depends_on:
+  #    - mongo
+  #    - gateway
+  #    - authentication
+  #    - user
+  redis:
+    image: bitnami/redis
+    restart: unless-stopped
+    hostname: ${REDIS_HOST}
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    expose:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - redis-data:/bitnami/redis/data
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    command:
+      - --auth
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+      - ./db/init/:/docker-entrypoint-initdb.d/
+    ports:
+      - ${MONGO_PORT}:27017
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: ${POSTGRES_HOST}
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+  pgadmin:
+    container_name: postgres_admin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - ${PGADMIN_PORT}:80
+    depends_on:
+      - postgres
+  gateway:
+    depends_on:
+      - authentication
+      - user
+    build: ./gateway
+    restart: always
+    hostname: gateway
+    container_name: gateway
+    env_file:
+      - .env
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+  authentication:
+    depends_on:
+      - postgres
+      - redis
+    build: ./authentication
+    restart: always
+    hostname: authentication
+    container_name: authentication_service
+    env_file:
+      - .env
+  user:
+    depends_on:
+      - mongo
+      - redis
+    build: ./user
+    restart: always
+    hostname: user
+    container_name: user_service
+    env_file:
+      - .env
+volumes:
+  mongo-data:
+  postgres-data:
+  pgadmin-data:
+  redis-data:
+  grafana-storage:
