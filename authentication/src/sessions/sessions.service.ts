@@ -39,7 +39,6 @@ export class SessionsService {
     await queryRunner.manager.save(session);
 
     try {
-      Logger.log('Message Sent');
       const response = await firstValueFrom(
         this.redis.send('create_customer', registerDto),
       );

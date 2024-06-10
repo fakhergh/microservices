@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 
 import { SessionsService } from './sessions.service';
 import { LoginDto, RegisterDto } from './dto/create-session.dto';
@@ -13,7 +13,6 @@ export class SessionsController {
 
   @MessagePattern('register')
   register(@Body() data: RegisterDto) {
-    Logger.log('REGISTER:AUTHENTICATION_SERVICE', data);
     return this.sessionsService.register(data);
   }
 }

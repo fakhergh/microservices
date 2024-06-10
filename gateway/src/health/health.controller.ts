@@ -27,16 +27,16 @@ export class HealthController {
         this.client.pingCheck('auth-service', {
           transport: Transport.TCP,
           options: {
-            host: 'authentication',
-            port: process.env.AUTHENTICATION_SERVICE_PORT,
+            host: process.env.AUTHENTICATION_SERVICE_HOST,
+            port: parseInt(process.env.AUTHENTICATION_SERVICE_PORT),
           },
         }),
       () =>
         this.client.pingCheck('user-service', {
           transport: Transport.TCP,
           options: {
-            host: 'user',
-            port: process.env.USER_SERVICE_PORT,
+            host: process.env.USER_SERVICE_HOST,
+            port: parseInt(process.env.USER_SERVICE_PORT),
           },
         }),
     ]);
