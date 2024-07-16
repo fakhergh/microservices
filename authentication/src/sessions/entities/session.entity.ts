@@ -5,10 +5,16 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  userId: string;
+
+  @Column()
+  userType: string;
+
   @Column({ unique: true })
   token: string;
 
-  @Column({ unique: true })
+  @Column()
   expiresAt: Date;
 
   @Column()

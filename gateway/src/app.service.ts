@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
@@ -19,10 +19,18 @@ export class AppService {
   }
 
   async register(registerDto: RegisterDto): Promise<{ token: string }> {
-    Logger.log('REGISTER:GATEWAY', registerDto);
     return await firstValueFrom(
       this.authenticationServiceClient.send('register', registerDto),
     );
+  }
+
+  async getCustomers(): Promise<[]> {
+    const response = await firstValueFrom(
+      this.userServiceClient.send('customers', {}),
+    );
+
+    console.log(response);
+    return response;
   }
 
   async getUsers(): Promise<[]> {

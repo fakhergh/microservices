@@ -21,4 +21,9 @@ export class AppController {
   getUsers(): Promise<[]> {
     return this.appService.getUsers();
   }
+
+  @Get('/customers')
+  getCustomers(): Promise<[]> {
+    return this.appService.getCustomers();
+  }
 }

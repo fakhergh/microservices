@@ -9,7 +9,12 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @MessagePattern('create_customer')
-  create(@Payload() createCustomerDto: CreateCustomerDto) {
+  async create(@Payload() createCustomerDto: CreateCustomerDto) {
     return this.customersService.create(createCustomerDto);
+  }
+
+  @MessagePattern('customers')
+  async getCustomers() {
+    return this.customersService.getCustomers();
   }
 }

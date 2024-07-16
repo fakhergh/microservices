@@ -24,28 +24,27 @@ export class SessionsService {
     });
   }
 
-  async login(loginDto: LoginDto) {}
+  async login(loginDto: LoginDto) {
+    console.log(loginDto);
+  }
 
   async register(registerDto: RegisterDto) {
     Logger.log('REGISTER:USER_SERVICE', registerDto);
+    const response = await firstValueFrom(
+      this.redis.send('create_customer', registerDto),
+    );
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
     const session = new Session();
+    session.userId = response._id;
+    session.userType = 'CUSTOMER';
     session.token = Date.now().toString();
     session.expiresAt = new Date();
     session.createdAt = new Date();
 
     await queryRunner.manager.save(session);
-
-    try {
-      const response = await firstValueFrom(
-        this.redis.send('create_customer', registerDto),
-      );
-      Logger.log(response);
-    } catch (error) {
-      Logger.error(error);
-    }
 
     return session.token;
   }

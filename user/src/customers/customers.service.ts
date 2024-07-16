@@ -7,10 +7,16 @@ import { Customer } from './customers.schema';
 
 @Injectable()
 export class CustomersService {
-  constructor(@InjectModel(Customer.name) private catModel: Model<Customer>) {}
+  constructor(
+    @InjectModel(Customer.name) private customerModel: Model<Customer>,
+  ) {}
 
   create(createCustomerDto: CreateCustomerDto) {
-    const createdCustomer = new this.catModel(createCustomerDto);
+    const createdCustomer = new this.customerModel(createCustomerDto);
     return createdCustomer.save();
+  }
+
+  getCustomers() {
+    return this.customerModel.find();
   }
 }
